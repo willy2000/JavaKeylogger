@@ -22,6 +22,11 @@ public class KeyListener implements NativeKeyListener{
         keyQueue = new LinkedList<Stroke>();
 	}
 
+    /*
+     * This method is used to poll the queue of keystrokes. 
+     * @return Stroke object if the queue is not empty, null otherwise.
+     * @see Stroke
+     */
     public Stroke pollQueue() {
         if (keyQueue.isEmpty()) {
             return null;

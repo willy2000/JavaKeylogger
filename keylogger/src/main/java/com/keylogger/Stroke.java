@@ -160,10 +160,16 @@ public class Stroke {
         this.timestamp = timestamp;
     }
 
+    /*
+     * @return String representation of the key.
+     */
     public String getKey() {
         return key;
     }
 
+    /*
+     * @return Timestamp of the key.
+     */
     public String getTimestamp() {
         return timestamp;
     }
