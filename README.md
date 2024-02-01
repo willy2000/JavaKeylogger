@@ -7,3 +7,12 @@ The implementation is not 100% complete (some keys could be missing) but it shou
 - Keyboard with german layout
 - RethinkDB to get the keystrokes (including the Java library)
 - JNativeHook library
+## Build JAR executable
+In order to build a .jar executable file run the following command (you will need to have maven installed):
+```bash
+mvn clean install
+```
+This will create a directory called target. In this you will find the keylogger-jar-with-dependencies.jar.
+
+**Disclaimer: This software is provided ONLY for educational purposes and does not constitute an inducement to commit fraud.
+If you use this software for any illegal purpose, the author is NOT responsible for your actions or any damage that may result from your actions.**
