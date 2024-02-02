@@ -29,3 +29,5 @@ target/
 #vscode
 .vscode/
 
+# output
+keystrokes.txt
