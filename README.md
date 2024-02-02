@@ -1,7 +1,6 @@
 # Simple Java Keylogger 
 ## Description
 A simple implementation of a keylogger in Java. It is usable on Windows and with a german keyboard. This was part of a project for my Cybersecurity class in university. 
-The implementation is not 100% complete (some keys could be missing) but it should be good enough to get an idea about keylogger.
 ## Build JAR executable with maven
 In order to build a .jar executable file run the following command inside the keylogger directory (you will need to have maven installed):
 ```bash
